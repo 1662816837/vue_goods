@@ -76,7 +76,7 @@
           label="操作">
           <template slot-scope="scope">
             <el-button type="primary" @click="toUpdate(scope.row)">修改</el-button>
-            <!--<el-button type="primary" @click="deleteBrand(scope.row.id)">删除</el-button>-->
+            <el-button type="primary" @click="deleteRoww(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
 
@@ -241,6 +241,12 @@
           this.queryData(1)
         }).catch(err=>console.log(err))
         this.addFormFlag=true;
+      },
+      deleteRoww:function (id) {
+        this.$ajax.post("http://localhost:8080/AttributeController/updateDataById?id="+id+"").then(res=>{
+          //重新查询数据
+          this.queryData(1);
+        }).catch(err=>console.log(err));
       }
       ,
       isParent:function (datas) {
