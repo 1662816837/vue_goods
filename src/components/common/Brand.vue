@@ -12,8 +12,6 @@
             <el-button type="primary" @click="queryData(1)">查询</el-button>
             <el-button type="success" @click="addFormFlag=true">新增</el-button>
           </el-form-item>
-
-
         </el-form>
       </div>
 
