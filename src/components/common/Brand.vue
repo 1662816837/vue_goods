@@ -240,8 +240,8 @@
         },
         imgCallBack:function(response, file, fileList){ //图片上传的回调函数
           // 赋值
-         this.addCarForm.imgpath=response.data.filePath;
-         this.updateBrandForm.imgpath=response.data.filePath;
+         this.addCarForm.imgpath=response.data;
+         this.updateBrandForm.imgpath=response.data;
         },
         addForm:function () {
           this.$ajax.post("http://localhost:8080/BrandController/addData",this.$qs.stringify(this.addCarForm)).then(res=>{

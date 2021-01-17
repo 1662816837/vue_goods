@@ -77,6 +77,7 @@
           <template slot-scope="scope">
             <el-button type="primary" @click="toUpdate(scope.row)">修改</el-button>
             <el-button type="primary" @click="deleteRoww(scope.row.id)">删除</el-button>
+            <el-button type="primary" @click="toUpValue(scope.row)">维护属性值</el-button>
           </template>
         </el-table-column>
 
@@ -138,6 +139,56 @@
     </el-dialog>
 
 
+    <!--属性值表格展示----------------------------------------------------------------------------->
+    <el-dialog title="品牌信息" :visible.sync="addValueFormFlag" width="1000px">
+    <div id="attributeValueTable">
+      <el-table
+        :data="attributeValueData"
+        style="width: 100%">
+
+        <el-table-column
+          prop="id"
+          label="序号"
+          width="180">
+        </el-table-column>
+
+        <el-table-column
+          prop="attributeName"
+          label="属性名称"
+          width="180">
+        </el-table-column>
+
+        <el-table-column
+          prop="nameCH"
+          label="属性值中文名"
+          width="180">
+        </el-table-column>
+
+        <el-table-column
+          prop="name"
+          label="英文属性值名称"
+          width="180">
+        </el-table-column>
+
+
+        <el-table-column
+          prop="id"
+          label="操作">
+          <template slot-scope="scope">
+           <!-- <el-button type="primary" @click="upUpdate(scope.row)">修改</el-button>
+            <el-button type="primary" @click="upDeleteRoww(scope.row.id)">删除</el-button>-->
+          </template>
+        </el-table-column>
+
+      </el-table>
+
+    </div>
+    </el-dialog>
+
+
+
+
+
   </div>
 </template>
 
@@ -147,6 +198,8 @@
     data() {
       return {
         attributeData: [],
+        attributeValueData:[],
+        addValueFormFlag:false,
         count: 0,
         sizes: [2, 5, 10, 20],
         size: 2,
@@ -209,12 +262,36 @@
       }, isSku: function (row, column) {
         return row.type == 0 ? "是" : "否"
       }, getTypeDatas() {
+        var nnn = "";
+
         for (var i = 0; i < this.TypeData.length; i++) {
+
           var rs  =this.isParent(this.TypeData[i])
           if (rs == false) {
+
+           // var aa= this.TypeData[i].pid;
+            /*
+             for (var j = 0; j < this.TypeData.length; j++) {
+               if (aa!=null && aa!=0 && this.TypeData[j].id==aa){
+                 nnn+="/"+this.TypeData[aa].name;
+                 aa=this.TypeData[aa].pid
+               }
+             }
+              /!*nnn.substring(1,nnn.length)*!/
+             alert(nnn);
+             nnn="";*/
+             // alert(JSON.stringify(this.TypeData[i]));
+
             this.TypeDatas.push(this.TypeData[i])
+            // alert(this.TypeData[i].pid);
+            // for (var j = 0; j < this.TypeData.length; j++) {
+            //   nnn+=this.TypeData[aa].name;
+            //   aa=this.TypeData[aa].pid;
+            //   alert(JSON.stringify(this.TypeData[aa]));
+            // }
           }
         }
+
         console.log(this.TypeDatas)
 
       },
@@ -256,6 +333,26 @@
           }
         }
         return false
+      }
+
+
+
+      /*属性值的数据维护*/
+      ,
+      toUpValue:function (row) {
+        var url = "http://localhost:8080/AttributeValueController/queryDate?attId="+row.id;
+        //发起请求
+        this.$ajax.post(url).then(res => {
+          for (let i = 0; i <res.data.data.length ; i++) {
+            res.data.data[i].attributeName=row.nameCH;
+          }
+
+          this.attributeValueData = res.data.data;
+
+          console.log(res);
+        }).catch(err => console.log(err));
+
+        this.addValueFormFlag = true;
       }
 
     }
