@@ -11,7 +11,7 @@
 
         <el-form-item>
           <el-button type="primary" @click="queryData(1)">查询</el-button>
-          <el-button type="success" @click="addFormFlag=true">新增</el-button>
+          <el-button type="success" @click="toAddData()">新增</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -24,19 +24,19 @@
         <el-table-column
           prop="id"
           label="序号"
-          width="180">
+          width="80">
         </el-table-column>
 
         <el-table-column
           prop="name"
           label="属性名称"
-          width="180">
+          width="80">
         </el-table-column>
 
         <el-table-column
           prop="nameCH"
           label="属性中文名"
-          width="180">
+          width="80">
         </el-table-column>
 
         <el-table-column
@@ -73,11 +73,11 @@
 
         <el-table-column
           prop="id"
-          label="操作">
+          label="操作" width="300px">
           <template slot-scope="scope">
-            <el-button type="primary" @click="toUpdate(scope.row)">修改</el-button>
-            <el-button type="primary" @click="deleteRoww(scope.row.id)">删除</el-button>
-            <el-button type="primary" @click="toUpValue(scope.row)">维护属性值</el-button>
+            <el-button type="success" icon="el-icon-edit" @click="toUpdate(scope.row)" circle></el-button>
+            <el-button type="success" icon="el-icon-delete" @click="deleteRoww(scope.row.id)" circle></el-button>
+            <el-button type="success" @click="toUpValue(scope.row)" round>维护属性值</el-button>
           </template>
         </el-table-column>
 
@@ -140,51 +140,52 @@
 
 
     <!--属性值表格展示----------------------------------------------------------------------------->
-    <el-dialog title="品牌信息" :visible.sync="addValueFormFlag" width="1000px">
+    <el-dialog title="属性值维护模板" :visible.sync="addValueFormFlag" width="1000px">
 
-    <div id="attributeValueTable">
-      <el-button type="primary" @click="toAddattributeValue">新增</el-button>
-      <el-table
-        :data="attributeValueData"
-        style="width: 100%">
+      <div id="attributeValueTable">
+        <el-button type="primary" @click="toAddattributeValue">新增</el-button>
+        <el-table
+          :data="attributeValueData"
+          style="width: 100%">
 
-        <el-table-column
-          prop="id"
-          label="序号"
-          width="180">
-        </el-table-column>
+          <el-table-column
+            prop="id"
+            label="序号"
+            width="180">
+          </el-table-column>
 
-        <el-table-column
-          prop="attributeName"
-          label="属性名称"
-          width="180">
-        </el-table-column>
+          <el-table-column
+            prop="attributeName"
+            label="属性名称"
+            width="180">
+          </el-table-column>
 
-        <el-table-column
-          prop="nameCH"
-          label="属性值中文名"
-          width="180">
-        </el-table-column>
+          <el-table-column
+            prop="nameCH"
+            label="属性值中文名"
+            width="180">
+          </el-table-column>
 
-        <el-table-column
-          prop="name"
-          label="英文属性值名称"
-          width="180">
-        </el-table-column>
+          <el-table-column
+            prop="name"
+            label="英文属性值名称"
+            width="180">
+          </el-table-column>
 
 
-        <el-table-column
-          prop="id"
-          label="操作">
-          <template slot-scope="scope">
-            <el-button type="primary" @click="upAttributeValueUpdate(scope.row)">修改</el-button>
-            <el-button type="primary" @click="upDeleteById(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
+          <el-table-column
+            prop="id"
+            label="操作">
+            <template slot-scope="scope">
+              <el-button type="primary" icon="el-icon-edit" @click="upAttributeValueUpdate(scope.row)"
+                         circle></el-button>
+              <el-button type="primary" icon="el-icon-delete" @click="upDeleteById(scope.row.id)" circle></el-button>
+            </template>
+          </el-table-column>
 
-      </el-table>
+        </el-table>
 
-    </div>
+      </div>
     </el-dialog>
 
     <!-----------------------属性值新增模板---------------------------------------->
@@ -202,15 +203,12 @@
         </el-form-item>
 
 
-
-
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="addAttributeValueFormFlag = false">取 消</el-button>
         <el-button type="primary" @click="addAttributeValueData">确 定</el-button>
       </div>
     </el-dialog>
-
 
 
   </div>
@@ -222,9 +220,10 @@
     data() {
       return {
         attributeData: [],
-        attributeValueData:[],
-        addValueFormFlag:false,
-        addAttributeValueFormFlag:false,
+        attributeValueData: [],
+        typeName:"",//用来存储我们拼接的底层信息
+        addValueFormFlag: false,
+        addAttributeValueFormFlag: false,
         count: 0,
         sizes: [2, 5, 10, 20],
         size: 2,
@@ -234,11 +233,11 @@
         searchForm: {
           name: ""
         },
-        addAttributeValueForm:{
-          name:"",
-          nameCH:"",
-          attId:"",
-          id:""
+        addAttributeValueForm: {
+          name: "",
+          nameCH: "",
+          attId: "",
+          id: ""
         },
         addForm: {
           id: "",
@@ -248,9 +247,7 @@
           type: "",
           isSKU: "",
         },
-        row:{
-
-        }
+        row: {}
       }
     }, created: function () {
       //请求数据
@@ -260,6 +257,10 @@
 
     },
     methods: {
+      toAddData: function () {
+        this.addForm = {};
+        this.addFormFlag = true;
+      },
       queryData: function (page) {
         //参数格式化
         var searchStr = this.$qs.stringify(this.searchForm);//条件查询的参数
@@ -290,96 +291,108 @@
           console.log(res)
           this.TypeData = res.data.data;
           this.getTypeDatas()
-        }).catch(err => console.log(err))
-      }, changetype: function (row, column) {
-        return row.type == 0 ? "下拉框" : row.type == 1 ? "单选框" : row.type == 2 ? "复选框" : "输入框"
-      }, isSku: function (row, column) {
-        return row.type == 0 ? "是" : "否"
-      }, getTypeDatas() {
-        var nnn = "";
-
-        for (var i = 0; i < this.TypeData.length; i++) {
-
-          var rs  =this.isParent(this.TypeData[i])
-          if (rs == false) {
-
-           // var aa= this.TypeData[i].pid;
-            /*
-             for (var j = 0; j < this.TypeData.length; j++) {
-               if (aa!=null && aa!=0 && this.TypeData[j].id==aa){
-                 nnn+="/"+this.TypeData[aa].name;
-                 aa=this.TypeData[aa].pid
-               }
-             }
-              /!*nnn.substring(1,nnn.length)*!/
-             alert(nnn);
-             nnn="";*/
-             // alert(JSON.stringify(this.TypeData[i]));
-
-            this.TypeDatas.push(this.TypeData[i])
-            // alert(this.TypeData[i].pid);
-            // for (var j = 0; j < this.TypeData.length; j++) {
-            //   nnn+=this.TypeData[aa].name;
-            //   aa=this.TypeData[aa].pid;
-            //   alert(JSON.stringify(this.TypeData[aa]));
-            // }
+          //遍历所有的子节点
+          for (var i = 0; i <this.TypeDatas.length; i++) {
+            //定义的全局属性 用来存储我们拼接的底层信息
+            this.typeName="";
+            //处理子节点的name属性
+            this.chandleName(this.TypeDatas[i]);
+            this.TypeDatas[i].name=this.typeName.split("/").reverse().join("/").substring(0,this.typeName.length-1);
           }
-        }
 
+
+        }).catch(err => console.log(err))
+      },
+      chandleName:function(node){
+        if (node.pid!=0){
+          this.typeName+="/"+node.name;
+          //判断我们传过来的值存不存在父节点
+          for (var i = 0; i <this.TypeData.length ; i++) {
+            if (node.pid==this.TypeData[i].id){
+              this.chandleName(this.TypeData[i]);
+              break;
+            }
+          }
+        }else{
+          this.typeName+="/"+node.name;
+        }
+      },
+      changetype: function (row, column) {
+        return row.type == 0 ? "下拉框" : row.type == 1 ? "单选框" : row.type == 2 ? "复选框" : "输入框"
+      },
+      isSku: function (row, column) {
+        return row.isSKU == 0? "是" : "否"
+      },
+      getTypeDatas() {
+        for (var i = 0; i < this.TypeData.length; i++) {
+          var nnn = this.TypeData[i];
+          //判断所有底层节点 并且赋值到下拉框
+          this.isParent(nnn)
+        }
         console.log(this.TypeDatas)
-
       },
-      addAttributeData:function () {
-        if (this.addForm.id==null || this.addForm.id==""){
-          this.$ajax.post("http://localhost:8080/AttributeController/addData",this.$qs.stringify(this.addForm)).then(res=>{
+      addAttributeData: function () {
+        if (this.addForm.id == null || this.addForm.id == "") {
+          this.$ajax.post("http://localhost:8080/AttributeController/addData", this.$qs.stringify(this.addForm)).then(res => {
             //关闭弹框
-            this.addFormFlag=false;
+            this.addFormFlag = false;
             this.queryData(1);
-          }).catch(err=>console.log(err));
-        } else{
-          var data = {"id":this.addForm.id,"name":this.addForm.name,"isSKU":this.addForm.isSKU,"nameCH":this.addForm.nameCH,"type":this.addForm.type,"typeId":this.addForm.typeId};
-          this.$ajax.post("http://localhost:8080/AttributeController/updateData",this.$qs.stringify(data)).then(res=>{
+          }).catch(err => console.log(err));
+        } else {
+          var data = {
+            "id": this.addForm.id,
+            "name": this.addForm.name,
+            "isSKU": this.addForm.isSKU,
+            "nameCH": this.addForm.nameCH,
+            "type": this.addForm.type,
+            "typeId": this.addForm.typeId
+          };
+          this.$ajax.post("http://localhost:8080/AttributeController/updateData", this.$qs.stringify(data)).then(res => {
             //关闭弹框
-            this.addFormFlag=false;
+            this.addFormFlag = false;
             this.queryData(1);
-          }).catch(err=>console.log(err));
+          }).catch(err => console.log(err));
         }
 
       },
-      toUpdate:function (row) {
-        this.$ajax.post("http://localhost:8080/AttributeController/queryDataById?id="+row.id).then(res=>{
-          this.addForm=res.data.data
+      toUpdate: function (row) {
+        this.$ajax.post("http://localhost:8080/AttributeController/queryDataById?id=" + row.id).then(res => {
+          this.addForm = res.data.data
           this.queryData(1)
-        }).catch(err=>console.log(err))
-        this.addFormFlag=true;
+        }).catch(err => console.log(err))
+        this.addFormFlag = true;
       },
-      deleteRoww:function (id) {
-        this.$ajax.post("http://localhost:8080/AttributeController/updateDataById?id="+id+"").then(res=>{
+      deleteRoww: function (id) {
+        this.$ajax.post("http://localhost:8080/AttributeController/updateDataById?id=" + id + "").then(res => {
           //重新查询数据
           this.queryData(1);
-        }).catch(err=>console.log(err));
+        }).catch(err => console.log(err));
       }
       ,
-      isParent:function (datas) {
-        for (var j = 0; j <this.TypeData.length ; j++) {
-          if (datas.id==this.TypeData[j].pid){
-            return true
+      isParent: function (datas) {
+        var ccc = true;
+        for (var j = 0; j < this.TypeData.length; j++) {
+          if (datas.id == this.TypeData[j].pid) {
+            ccc = false;
+            break;
           }
         }
-        return false
+        if (ccc == true) {
+          this.TypeDatas.push(datas)
+        }
       }
 
 
 
       /*属性值的数据维护*/
       ,
-      toUpValue:function (row) {
-        this.row=row;
-        var url = "http://localhost:8080/AttributeValueController/queryDate?attId="+row.id;
+      toUpValue: function (row) {
+        this.row = row;
+        var url = "http://localhost:8080/AttributeValueController/queryDate?attId=" + row.id;
         //发起请求
         this.$ajax.post(url).then(res => {
-          for (let i = 0; i <res.data.data.length ; i++) {
-            res.data.data[i].attributeName=row.nameCH;
+          for (let i = 0; i < res.data.data.length; i++) {
+            res.data.data[i].attributeName = row.nameCH;
           }
 
           this.attributeValueData = res.data.data;
@@ -389,17 +402,17 @@
 
         this.addValueFormFlag = true;
       },
-      addAttributeValueData:function () {
-        if (this.addAttributeValueForm.id==null || this.addAttributeValueForm.id=="") {
-          this.addAttributeValueForm.attId = this.attributeValueData[0].attId
+      addAttributeValueData: function () {
+        if (this.addAttributeValueForm.id == null || this.addAttributeValueForm.id == "") {
+          this.addAttributeValueForm.attId = this.row.id;
           var ccc = this;
           this.$ajax.post("http://localhost:8080/AttributeValueController/addData", this.$qs.stringify(this.addAttributeValueForm)).then(res => {
             //关闭弹框
-            this.addAttributeValueForm = false;
+            this.addAttributeValueFormFlag = false;
             this.toUpValue(this.row);
           }).catch(err => console.log(err));
-        }else{
-          this.addAttributeValueForm.attId = this.attributeValueData[0].attId
+        } else {
+          this.addAttributeValueForm.attId = this.row.id;
           this.$ajax.post("http://localhost:8080/AttributeValueController/updateData", this.$qs.stringify(this.addAttributeValueForm)).then(res => {
             //关闭弹框
             this.addAttributeValueForm = false;
@@ -407,25 +420,24 @@
           }).catch(err => console.log(err));
         }
       },
-      toAddattributeValue:function () {
-        this.addAttributeValueFormFlag=true;
+      toAddattributeValue: function () {
+        this.addAttributeValueForm = {};
+        this.addAttributeValueFormFlag = true;
       },
-      upAttributeValueUpdate:function (row) {
-        this.$ajax.post("http://localhost:8080/AttributeValueController/queryDataById?id="+row.id).then(res=>{
-         console.log(res)
-          this.addAttributeValueForm=res.data.data
-        }).catch(err=>console.log(err))
-        this.addAttributeValueFormFlag=true;
+      upAttributeValueUpdate: function (row) {
+        this.$ajax.post("http://localhost:8080/AttributeValueController/queryDataById?id=" + row.id).then(res => {
+          console.log(res)
+          this.addAttributeValueForm = res.data.data
+        }).catch(err => console.log(err))
+        this.addAttributeValueFormFlag = true;
       },
-      upDeleteById:function (id) {
-        this.$ajax.post("http://localhost:8080/AttributeValueController/updataById?id="+id+"").then(res=>{
+      upDeleteById: function (id) {
+        this.$ajax.post("http://localhost:8080/AttributeValueController/updataById?id=" + id + "").then(res => {
           //重新查询数据
-          this.addAttributeValueFormFlag=false;
+          this.addAttributeValueFormFlag = false;
           this.toUpValue(this.row);
-        }).catch(err=>console.log(err));
+        }).catch(err => console.log(err));
       }
-
-
 
 
     }

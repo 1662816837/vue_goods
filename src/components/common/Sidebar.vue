@@ -72,6 +72,9 @@
               {
                 index: 'Type',
                 title: '分类管理'
+              },{
+                index: 'Commodity',
+                title: '商品管理'
               },
               {
                 index: 'Brand',

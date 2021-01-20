@@ -27,6 +27,11 @@ export default new Router({
           path: '/Type',
           component: () => import(/* webpackChunkName: "dashboard" */ '../components/shop/Type.vue'),
           meta: { title: '分类管理' }
+        },
+        {
+          path: '/Commodity',
+          component: () => import(/* webpackChunkName: "dashboard" */ '../components/shangPin/Commodity.vue'),
+          meta: { title: '商品管理' }
         },{
           path: '/Brand',
           component: () => import(/* webpackChunkName: "dashboard" */ '../components/common/Brand.vue'),
