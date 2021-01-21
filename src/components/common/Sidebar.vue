@@ -74,6 +74,10 @@
                 title: '分类管理'
               },{
                 index: 'Commodity',
+                title: '商品数据管理'
+              },
+              {
+                index: 'Shop',
                 title: '商品管理'
               },
               {

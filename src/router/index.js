@@ -29,9 +29,14 @@ export default new Router({
           meta: { title: '分类管理' }
         },
         {
+          path: '/Shop',
+          component: () => import(/* webpackChunkName: "dashboard" */ '../components/shopTable/Shop.vue'),
+          meta: { title: '商品管理' }
+        },
+        {
           path: '/Commodity',
           component: () => import(/* webpackChunkName: "dashboard" */ '../components/shangPin/Commodity.vue'),
-          meta: { title: '商品管理' }
+          meta: { title: '商品数据管理' }
         },{
           path: '/Brand',
           component: () => import(/* webpackChunkName: "dashboard" */ '../components/common/Brand.vue'),

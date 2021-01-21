@@ -19,11 +19,11 @@
           <el-input v-model="productInfoForm.name"></el-input>
         </el-form-item>
         <el-form-item label="副标题：" prop="subTitle">
-          <el-input v-model="productInfoForm.subTitle"></el-input>
+          <el-input v-model="productInfoForm.title"></el-input>
         </el-form-item>
         <el-form-item label="商品品牌：" prop="brandId">
           <el-select
-            v-model="productInfoForm.brandId"
+            v-model="productInfoForm.bandId"
             placeholder="请选择品牌">
             <el-option
               v-for="item in brandDatas"
@@ -36,18 +36,31 @@
         <el-form-item label="商品介绍：">
           <el-input
             :autoSize="true"
-            v-model="productInfoForm.description"
+            v-model="productInfoForm.productdecs"
             type="textarea"
             placeholder="请输入内容"></el-input>
         </el-form-item>
         <el-form-item label="商品售价：">
           <el-input v-model="productInfoForm.price"></el-input>
         </el-form-item>
+
+        <el-form-item label="图片">
+          <el-upload
+            class="upload-demo"
+            action="http://localhost:8080/BrandController/uploadFile"
+            :on-success="imgCallBack"
+            name="file"
+            list-type="picture">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+          </el-upload>
+        </el-form-item>
+
         <el-form-item label="商品库存：">
-          <el-input v-model="productInfoForm.stock"></el-input>
+          <el-input v-model="productInfoForm.stocks"></el-input>
         </el-form-item>
         <el-form-item label="排序">
-          <el-input v-model="productInfoForm.sort"></el-input>
+          <el-input v-model="productInfoForm.sortNum"></el-input>
         </el-form-item>
         <el-form-item style="text-align: center">
           <!--<el-button type="primary" size="medium" @click="next">下一步，填写商品促销</el-button>-->
@@ -93,7 +106,7 @@
             width="180">
 
             <template slot-scope="scope">
-              <el-input/>
+              <el-input v-model="scope.row.inp"/>
             </template>
 
           </el-table-column>
@@ -101,7 +114,7 @@
             label="价格"
             width="180">
             <template slot-scope="scope">
-              <el-input/>
+              <el-input v-model="scope.row.inpp"/>
             </template>
           </el-table-column>
         </el-table>
@@ -118,20 +131,21 @@
 
             </el-input>
 
-            <el-select v-if="a.type==0" v-model="ooa" placeholder="请选择">
-              <el-option v-for="b in a.values" :key="b.id" :label="b.nameCH" :value="b.id"></el-option>
+            <el-select v-if="a.type==0"  v-model="a.ckValues" placeholder="请选择">
+              <el-option v-for="b in a.values" :key="b.id" :label="b.nameCH" :value="b.nameCH"></el-option>
             </el-select>
 
-            <el-radio-group v-model="radioaaa" v-if="a.type==1">
+            <el-radio-group v-model="a.ckValues" v-if="a.type==1">
               <el-radio v-for="b in a.values" :key="b.id" :label="b.nameCH"></el-radio>
             </el-radio-group>
 
-            <el-checkbox-group v-model="ss" v-if="a.type==2">
+            <el-checkbox-group v-model="a.ckValues" v-if="a.type==2">
               <el-checkbox v-for="b in a.values" :key="b.id" :label="b.nameCH" name="type"></el-checkbox>
             </el-checkbox-group>
 
-          </el-form-item>
 
+          </el-form-item>
+          <el-button type="primary" plain  @click="comintAdd">提交</el-button>
         </el-form-item>
 
 
@@ -172,16 +186,14 @@
         typeName: "",
         productInfoForm: {
           name: "",
-          subTitle: "",
-          productSn: "",
+          title: "",
+          bandId: "",
+          typeId: "",
+          productdecs: "",
           price: "",
-          originalPrice: "",
-          stock: "",
-          unit: "",
-          weight: "",
-          sort: "",
-          description: "",
-          brandId: ""
+          imgPath: "",
+          stocks: "",
+          sortNum: "",
         },
         productForm2: {},
         attData: [],   //非sku的属性数据
@@ -195,6 +207,33 @@
       this.getBrandData();
     },
     methods: {
+      imgCallBack: function (response, file, fileList) { //图片上传的回调函数
+        // 赋值
+        this.productInfoForm.imgPath = response.data;
+      },
+      comintAdd:function(){//新增商品
+        console.log(this.productForm2.typeId)
+        console.log(this.attData)
+        console.log(this.tableData)
+        console.log(this.productInfoForm)
+        //声明后台接参的atrr
+        this.productInfoForm.typeId = this.productForm2.typeId;
+        var atrrs = [];
+        //循环数据  吧数据用json串的形式  放到数组中
+        for (let i = 0; i <this.attData.length ; i++) {
+          let  attData={};
+          attData[this.attData[i].name]=this.attData[i].ckValues
+          atrrs.push(attData);
+        }
+
+        this.productInfoForm.attr=JSON.stringify(atrrs);
+        this.productInfoForm.sku=JSON.stringify(this.tableData); //传参是string   怎么将js json 转为字符串
+        console.log(this.$qs.stringify(this.productInfoForm));
+
+        this.$ajax.post("http://localhost:8080/ShopController/addDataSku",this.$qs.stringify(this.productInfoForm)).then(res=>{
+          this.$message.success("添加成功");
+        })
+      },
       discarts: function () {
         //笛卡尔积
         var twodDscartes = function (a, b) {
@@ -275,7 +314,9 @@
       },
 
       next: function () {
-        this.queryTypeData();
+        if(this.TypeDatas.length==0){
+          this.queryTypeData();
+        }
         if (this.active++ > 2) this.active = 1;
       },
       queryTypeData: function () {
@@ -345,9 +386,11 @@
                   this.$ajax.post("http://localhost:8080/AttributeValueController/queryDate?attId=" + attrDatas[i].id).then(res => {
                     console.log(res)
                     attrDatas[i].values = res.data.data;
+                    attrDatas[i].ckValues=[];
                     this.attData.push(attrDatas[i]);
                   })
                 } else {
+                  attrDatas[i].ckValues=[];
                   this.attData.push(attrDatas[i]);
                 }
 
