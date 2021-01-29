@@ -127,7 +127,7 @@
           <el-form-item v-for="a in  attData" :key="a.id" :label="a.nameCH">
 
             <!--  0 下拉框     1 单选框      2  复选框   3  输入框  -->
-            <el-input v-if="a.type==3">
+            <el-input v-if="a.type==3" v-model="a.ckValues"   >
 
             </el-input>
 
@@ -423,6 +423,9 @@
           this.brandDatas = res.data.data;
         }).catch(err => console.log(err))
       }
+    },
+    change:function (e) {
+      this.$forceUpdate()
     }
 
 
